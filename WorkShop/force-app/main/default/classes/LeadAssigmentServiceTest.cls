@@ -25,7 +25,7 @@ private class LeadAssigmentServiceTest {
         LeadAssigmentService service = new LeadAssigmentService();
         service.assignLead(lead);
 
-        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id];
+        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id LIMIT 1];
         Assert.isTrue(String.valueOf(insertedLead.OwnerId).startsWith('00G'),
                 'Lead with no territory must be escalated to a queue');
     }
@@ -43,7 +43,7 @@ private class LeadAssigmentServiceTest {
         LeadAssigmentService service = new LeadAssigmentService();
         service.assignLead(lead);
 
-        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id];
+        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id LIMIT 1];
         Assert.isTrue(String.valueOf(insertedLead.OwnerId).startsWith('00G'),
                 'Lead with no Industry must be escalated to a queue');
     }
@@ -66,16 +66,19 @@ private class LeadAssigmentServiceTest {
 
         Assert.isTrue(result.wasAssigned,
                 'result must report wasAssigned equal to true');
-        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id];
+        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id LIMIT 1];
         Assert.areEqual('Working', insertedLead.Status,
                 'Status must be working after assigment');
         Assert.isTrue(String.valueOf(insertedLead.OwnerId).startsWith('005'),
                 'Owner must be an user');
     }
-}
 
-public class FakeGateway implements IRoutingGateway{
-    public RoutingResult findBestRep(String string, String i, Integer l){
-        return RoutingResult.assigned('00500000000001AAA', 'Jane Doe');
+    public class FakeGateway implements IRoutingGateway{
+        public RoutingResult findBestRep(String String, String i, Integer l){
+            return RoutingResult.assigned('00500000000001AAA', 'Jane Doe');
+        }
     }
 }
+
+
+
