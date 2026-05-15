@@ -12,7 +12,7 @@ public with sharing class LeadAssigmentService {
                 LIMIT 1
         ];
 
-        if (String.isBlank(lead.State)){
+        if (String.isBlank(lead.State) || String.isBlank(lead.Industry)){
             lead.OwnerId = group.Id;
             lead.Status = 'Open';
             update lead;
