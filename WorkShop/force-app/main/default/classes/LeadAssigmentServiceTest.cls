@@ -29,4 +29,22 @@ private class LeadAssigmentServiceTest {
         Assert.isTrue(String.valueOf(insertedLead.OwnerId).startsWith('00G'),
                 'Lead with no territory must be escalated to a queue');
     }
+
+    @IsTest
+    static void assignLead_givenMissingIndustry_escalatesToQueue(){
+        Lead lead = new Lead(
+                LastName = 'Test',
+                Company = 'Acme Corp',
+                State = 'CA'
+                //Industry intentionally blank
+        );
+        insert lead;
+
+        LeadAssigmentService service = new LeadAssigmentService();
+        service.assignLead(lead);
+
+        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id];
+        Assert.isTrue(String.valueOf(insertedLead.OwnerId).startsWith('00G'),
+                'Lead with no Industry must be escalated to a queue');
+    }
 }
