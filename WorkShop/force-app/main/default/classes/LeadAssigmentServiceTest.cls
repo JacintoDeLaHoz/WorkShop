@@ -47,4 +47,35 @@ private class LeadAssigmentServiceTest {
         Assert.isTrue(String.valueOf(insertedLead.OwnerId).startsWith('00G'),
                 'Lead with no Industry must be escalated to a queue');
     }
+
+    @IsTest
+    static void assignLead_givenRepAvailable_assignRepAndSetsStatusWorking(){
+        Lead lead = new Lead(
+                LastName = 'Test',
+                Company = 'Acme Corp',
+                State = 'CA',
+                Industry = 'Technology'
+        );
+        insert lead;
+
+        LeadAssigmentService service = new LeadAssigmentService(
+                new FakeGatewaySuccess()
+        );
+
+        LeadAssigmentService.AssigmentResult result = service.assignLead(lead);
+
+        Assert.isTrue(result.wasAssigned,
+                'result must report wasAssigned equal to true');
+        Lead insertedLead = [SELECT Id FROM Lead WHERE Id = :lead.Id];
+        Assert.areEqual('Working', insertedLead.Status,
+                'Status must be working after assigment');
+        Assert.isTrue(String.valueOf(insertedLead.OwnerId).startsWith('005'),
+                'Owner must be an user');
+    }
+}
+
+public class FakeGateway implements IRoutingGateway{
+    public RoutingResult findBestRep(String string, String i, Integer l){
+        return RoutingResult.assigned('00500000000001AAA', 'Jane Doe');
+    }
 }
