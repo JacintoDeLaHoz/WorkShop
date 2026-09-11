@@ -1,7 +1,6 @@
 /**
  * @description Assertions profundas reutilizables para la suite de estrés de
- *              OpportunityPriorityService. Vivir fuera de la clase de test es
- *              una regla del proyecto: los test methods solo orquestan, las
+ *              OpportunityPriorityService. Los test methods solo orquestan; las
  *              assertions de negocio se reutilizan entre escenarios.
  * @group Stress Testing
  */
@@ -14,7 +13,7 @@ public class OpportunityStressAssertions {
     /**
      * @description Verifica Account por Account: Rating = 'Hot' si y solo si tiene
      *              al menos una Opportunity calificadora según el patrón determinista
-     *              del factory; en caso contrario el Rating debió quedar intacto.
+     *              del factory; en caso contrario, el Rating debió permanecer intacto.
      * @param accounts Accounts creados por el factory (mismo orden)
      * @param opps     Opportunities del escenario (mismo orden de inserción)
      */
@@ -25,7 +24,7 @@ public class OpportunityStressAssertions {
     /**
      * @description Sobrecarga para el escenario de transición de etapa: usa la
      *              predicción post-transición (los abiertos de monto alto pasan
-     *              a calificar cuando el update los vuelve Closed Won).
+     *              a calificar cuando el update los vuelve Closed Won.
      * @param accounts       Accounts creados por el factory (mismo orden)
      * @param opps           Opportunities del escenario
      * @param afterTransition true si el escenario actualizó todo a Closed Won
