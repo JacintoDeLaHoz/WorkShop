@@ -1,6 +1,5 @@
 /**
  * @description Servicio de priorización de Opportunities de alto valor.
- *              Reglas de negocio (ver docs/ESTRATEGIA-TESTING.md):
  *              R1 - Opportunity en Closed Won con Amount >= 50.000 => Account.Rating = 'Hot'
  *              R2 - Cada Opportunity de alto valor recibe exactamente UN Task de
  *                   seguimiento (la creación debe ser idempotente: reprocesar
@@ -9,7 +8,7 @@
  *                   Amount nulo, Opportunity sin Account)
  *              Diseño bulkificado (fase GREEN de TDD): sin SOQL/DML en loops,
  *              trabajo en colecciones y deduplicación por datos (no por
- *              variables estáticas), por lo que soporta re-ejecuciones y
+ *              variables estáticas), por lo que soporta reejecuciones y
  *              múltiples transacciones.
  */
 public with sharing class OpportunityPriorityService {
