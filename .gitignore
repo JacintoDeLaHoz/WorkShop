@@ -1,3 +1,6 @@
 test-results/
 .sf/
 .sfdx/
+
+# docs locales (no versionar)
+docs/
