@@ -83,6 +83,21 @@ public class OpportunityTestDataFactory {
     }
 
     /**
+     * @description Predicción para el escenario de TRANSICIÓN: tras un update
+     *              masivo a Closed Won, también califican los registros de etapa
+     *              abierta con monto alto (slots 3, 8, 13). Solo quedan fuera
+     *              los de monto bajo (2, 7), Amount nulo (4, 9) y neutros.
+     * @param index      Posición del registro dentro de su Account (0-based)
+     * @param hasAccount Si el registro tiene Account (ver hasAccountByIndex)
+     * @return true si se espera que califique tras la transición a Closed Won
+     */
+    public static Boolean isExpectedQualifierAfterTransition(Integer index, Boolean hasAccount) {
+        Integer slot = Math.mod(index, 20);
+        return hasAccount && (slot == 0 || slot == 5 || slot == 10
+            || slot == 3 || slot == 8 || slot == 13);
+    }
+
+    /**
      * @description Predicción del factory: ¿el registro i-ésimo tiene Account?
      * @param index Posición del registro dentro de su Account (0-based)
      * @return true si el patrón le asigna Account

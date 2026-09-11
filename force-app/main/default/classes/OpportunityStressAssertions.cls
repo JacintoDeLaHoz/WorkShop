@@ -19,11 +19,27 @@ public class OpportunityStressAssertions {
      * @param opps     Opportunities del escenario (mismo orden de inserción)
      */
     public static void assertAccountsRatedCorrectly(List<Account> accounts, List<Opportunity> opps) {
+        assertAccountsRatedCorrectly(accounts, opps, false);
+    }
+
+    /**
+     * @description Sobrecarga para el escenario de transición de etapa: usa la
+     *              predicción post-transición (los abiertos de monto alto pasan
+     *              a calificar cuando el update los vuelve Closed Won).
+     * @param accounts       Accounts creados por el factory (mismo orden)
+     * @param opps           Opportunities del escenario
+     * @param afterTransition true si el escenario actualizó todo a Closed Won
+     */
+    public static void assertAccountsRatedCorrectly(List<Account> accounts, List<Opportunity> opps, Boolean afterTransition) {
         Set<Id> shouldBeHot = new Set<Id>();
         Integer perAccount = opps.size() / accounts.size();
         for (Integer a = 0; a < accounts.size(); a++) {
             for (Integer i = 0; i < perAccount; i++) {
-                if (OpportunityTestDataFactory.isExpectedQualifier(i, OpportunityTestDataFactory.hasAccountByIndex(i))) {
+                Boolean hasAccount = OpportunityTestDataFactory.hasAccountByIndex(i);
+                Boolean expected = afterTransition
+                    ? OpportunityTestDataFactory.isExpectedQualifierAfterTransition(i, hasAccount)
+                    : OpportunityTestDataFactory.isExpectedQualifier(i, hasAccount);
+                if (expected) {
                     shouldBeHot.add(accounts[a].Id);
                     break;
                 }
@@ -50,6 +66,16 @@ public class OpportunityStressAssertions {
      * @param context     Nombre del escenario para mensajes de fallo legibles
      */
     public static void assertTasksMatchQualifiers(List<Opportunity> opps, String context) {
+        assertTasksMatchQualifiers(opps, context, false);
+    }
+
+    /**
+     * @description Sobrecarga para el escenario de transición de etapa.
+     * @param opps           Opportunities del escenario (10 Accounts x N)
+     * @param context        Nombre del escenario para mensajes de fallo legibles
+     * @param afterTransition true si el escenario actualizó todo a Closed Won
+     */
+    public static void assertTasksMatchQualifiers(List<Opportunity> opps, String context, Boolean afterTransition) {
         Map<Id, List<Task>> tasksByOpp = new Map<Id, List<Task>>();
         for (Task t : [SELECT WhatId, Subject, OwnerId FROM Task WHERE WhatId IN :new Map<Id, Opportunity>(opps).keySet()]) {
             if (!tasksByOpp.containsKey(t.WhatId)) {
@@ -61,8 +87,10 @@ public class OpportunityStressAssertions {
         Integer perAccount = opps.size() / 10;
         for (Integer idx = 0; idx < opps.size(); idx++) {
             Integer i = Math.mod(idx, perAccount);
-            Boolean expected = OpportunityTestDataFactory.isExpectedQualifier(
-                i, OpportunityTestDataFactory.hasAccountByIndex(i));
+            Boolean hasAccount = OpportunityTestDataFactory.hasAccountByIndex(i);
+            Boolean expected = afterTransition
+                ? OpportunityTestDataFactory.isExpectedQualifierAfterTransition(i, hasAccount)
+                : OpportunityTestDataFactory.isExpectedQualifier(i, hasAccount);
             Opportunity o = opps[idx];
             List<Task> tasks = tasksByOpp.get(o.Id);
 

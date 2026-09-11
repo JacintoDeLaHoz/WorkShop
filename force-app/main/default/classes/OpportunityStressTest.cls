@@ -56,8 +56,11 @@ private class OpportunityStressTest {
         update opps;
         Test.stopTest();
 
-        OpportunityStressAssertions.assertAccountsRatedCorrectly(accounts, opps);
-        OpportunityStressAssertions.assertTasksMatchQualifiers(opps, 'bulk 200 update');
+        // Tras la transición, los abiertos de monto alto (slots 3/8/13) también
+        // califican: Closed Won + Amount >= umbral es la regla, sin importar la
+        // etapa original. La predicción usa la variante post-transición.
+        OpportunityStressAssertions.assertAccountsRatedCorrectly(accounts, opps, true);
+        OpportunityStressAssertions.assertTasksMatchQualifiers(opps, 'bulk 200 update', true);
     }
 
     /**
