@@ -56,7 +56,7 @@ public with sharing class OpportunityPriorityService {
     private static void processInternal(List<Opportunity> opps) {
         List<Opportunity> highValue = new List<Opportunity>();
         Set<Id> accountIds = new Set<Id>();
-        for (Opportunity o : opps) {
+        for (Opportunity o: opps) {
             if (isHighValue(o)) {
                 highValue.add(o);
                 accountIds.add(o.AccountId);
@@ -66,17 +66,16 @@ public with sharing class OpportunityPriorityService {
             return;
         }
 
-        // R1 - marcar Accounts como Hot (agrupado: un Account por más de
-        // una Opportunity calificadora se actualiza una sola vez).
+        // R1 - marcar Accounts como Hot
         List<Account> accountsToUpdate = new List<Account>();
-        for (Id accountId : accountIds) {
+        for (Id accountId: accountIds) {
             accountsToUpdate.add(new Account(Id = accountId, Rating = HOT_RATING));
         }
         update accountsToUpdate;
 
         // R2 - Tasks de seguimiento idempotentes: la deduplicación se basa en
         // datos existentes (query), no en estado estático, así es segura en
-        // re-ejecuciones y entre transacciones.
+        // reejecuciones y entre transacciones.
         Map<Id, Boolean> hasFollowUp = new Map<Id, Boolean>();
         for (Task t : [
             SELECT WhatId
@@ -88,7 +87,7 @@ public with sharing class OpportunityPriorityService {
         }
 
         List<Task> tasksToInsert = new List<Task>();
-        for (Opportunity o : highValue) {
+        for (Opportunity o: highValue) {
             if (!hasFollowUp.containsKey(o.Id)) {
                 tasksToInsert.add(new Task(
                     WhatId = o.Id,
